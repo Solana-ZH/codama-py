@@ -1,11 +1,10 @@
-# Codama ➤ Renderers ➤ Python
+# Copyma
 
-[![npm][npm-image]][npm-url]
-[![npm-downloads][npm-downloads-image]][npm-url]
+_Solana Python Client Generator, Powered by Codama_
 
+This package provides a Solana Python client renderer for [Codama](https://github.com/codama-idl/codama)  that generates Python client code from Solana program IDL files.
 
-
-This package generates Rust clients from your Codama IDLs.
+This tool is in beta, so please report any issues or feedback.
 
 ## Installation
 
@@ -13,10 +12,7 @@ This package generates Rust clients from your Codama IDLs.
 pnpm install copyma
 ```
 
-> [!NOTE]
-> This package is **not** included in the main [`codama`](../library) package.
->
-> However, note that the [`renderers`](../renderers) package re-exports the `renderVisitor` function of this package as `renderPythonVisitor`.
+
 
 ## Usage
 
