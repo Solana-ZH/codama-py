@@ -16,6 +16,9 @@
     "test:e2e": "sh ./e2e/test.sh",
     "genpy": "tsx ./bin/genpy.ts"
   },
+  "files": [
+    "dist"
+  ],
   "keywords": [],
   "author": "",
   "dependencies": {
