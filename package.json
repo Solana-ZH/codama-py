@@ -1,6 +1,6 @@
 {
   "name": "copyma",
-  "version": "0.1.1-beta",
+  "version": "0.1.2-beta",
   "description": "Python renderer compatible with the Solana Kit library",
   "main": "./dist/index.node.cjs",
   "module": "./dist/index.node.mjs",
