@@ -12,7 +12,24 @@ This tool is in beta, so please report any issues or feedback.
 pnpm install copyma
 ```
 
+## Standalone Usage
 
+To use Copyma independently (not as a library), you can clone the repository and use the built-in CLI tool:
+
+```sh
+# Clone the repository
+git clone https://github.com/daog1/copyma.git
+cd copyma
+
+# Install dependencies
+pnpm install
+
+# Build the project
+pnpm build
+
+# Generate Python client from an IDL file
+pnpm run genpy -i path/to/your/idl.json -d path/to/output/directory
+```
 
 ## Usage
 

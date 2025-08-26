@@ -12,7 +12,24 @@ _Solana Python 客户端生成器，由 Codama 驱动_
 pnpm install copyma
 ```
 
+## 独立使用
 
+要独立使用 Copyma（不作为库使用），您可以克隆仓库并使用内置的 CLI 工具：
+
+```sh
+# 克隆仓库
+git clone https://github.com/daog1/copyma.git
+cd copyma
+
+# 安装依赖
+pnpm install
+
+# 构建项目
+pnpm build
+
+# 从 IDL 文件生成 Python 客户端
+pnpm run genpy -i path/to/your/idl.json -d path/to/output/directory
+```
 
 ## 使用方法
 
