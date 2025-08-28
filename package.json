@@ -1,6 +1,6 @@
 {
-  "name": "copyma",
-  "version": "0.1.2-beta",
+  "name": "codama-py",
+  "version": "0.1.3-beta",
   "description": "Python renderer compatible with the Solana Kit library",
   "main": "./dist/index.node.cjs",
   "module": "./dist/index.node.mjs",
@@ -48,10 +48,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/daog1/copyma.git"
+    "url": "git+https://github.com/Solana-ZH/codama-py.git"
   },
   "bugs": {
-    "url": "https://github.com/daog1/copyma/issues"
+    "url": "https://github.com/Solana-ZH/codama-py/issues"
   },
   "browserslist": [
     "supports bigint and not dead",

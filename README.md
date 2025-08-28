@@ -1,4 +1,4 @@
-# Copyma
+# Codama-py
 
 _Solana Python Client Generator, Powered by Codama_
 
@@ -9,17 +9,17 @@ This tool is in beta, so please report any issues or feedback.
 ## Installation
 
 ```sh
-pnpm install copyma
+pnpm install codama-py
 ```
 
 ## Standalone Usage
 
-To use Copyma independently (not as a library), you can clone the repository and use the built-in CLI tool:
+To use Codama-py independently (not as a library), you can clone the repository and use the built-in CLI tool:
 
 ```sh
 # Clone the repository
-git clone https://github.com/daog1/copyma.git
-cd copyma
+git clone https://github.com/Solana-ZH/codama-py.git
+cd codama-py
 
 # Install dependencies
 pnpm install
@@ -37,7 +37,7 @@ Once you have a Codama IDL, you can use the `renderVisitor` of this package to g
 
 ```ts
 // node ./codama.mjs
-import { renderVisitor } from 'copyma';
+import { renderVisitor } from 'codama-py';
 
 const pathToGeneratedFolder = path.join(__dirname, 'clients', 'python', 'src', 'generated');
 const options = {}; // See below.

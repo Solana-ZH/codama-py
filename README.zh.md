@@ -1,4 +1,4 @@
-# Copyma
+# Codama-py
 
 _Solana Python 客户端生成器，由 Codama 驱动_
 
@@ -9,17 +9,17 @@ _Solana Python 客户端生成器，由 Codama 驱动_
 ## 安装
 
 ```sh
-pnpm install copyma
+pnpm install codama-py
 ```
 
 ## 独立使用
 
-要独立使用 Copyma（不作为库使用），您可以克隆仓库并使用内置的 CLI 工具：
+要独立使用 Codama-py（不作为库使用），您可以克隆仓库并使用内置的 CLI 工具：
 
 ```sh
 # 克隆仓库
-git clone https://github.com/daog1/copyma.git
-cd copyma
+git clone https://github.com/Solana-ZH/codama-py.git
+cd codama-py
 
 # 安装依赖
 pnpm install
@@ -37,7 +37,7 @@ pnpm run genpy -i path/to/your/idl.json -d path/to/output/directory
 
 ```ts
 // node ./codama.mjs
-import { renderVisitor } from 'copyma';
+import { renderVisitor } from 'codama-py';
 
 const pathToGeneratedFolder = path.join(__dirname, 'clients', 'python', 'src', 'generated');
 const options = {}; // 见下文。
