@@ -9,6 +9,7 @@
         "forceConsistentCasingInFileNames": true,
         "inlineSources": false,
         "isolatedModules": true,
+        "module": "ESNext",
         "moduleResolution": "node",
         "noFallthroughCasesInSwitch": true,
         "noUnusedLocals": true,
@@ -16,7 +17,8 @@
         "preserveWatchOutput": true,
         "skipLibCheck": true,
         "strict": true,
-        "target": "ESNext"
+        "target": "ESNext",
+        "allowImportingTsExtensions": true
     },
     "exclude": ["node_modules"]
 }

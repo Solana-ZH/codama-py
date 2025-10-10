@@ -1,4 +1,4 @@
-import { deleteDirectory } from '@codama/renderers-core';
+import {deleteDirectory, writeRenderMap} from '@codama/renderers-core';
 import { rootNodeVisitor, visit } from '@codama/visitors-core';
 
 import { GetRenderMapOptions, getRenderMapVisitor } from './getRenderMapVisitor';
@@ -17,6 +17,7 @@ export function renderVisitor(path: string, options: RenderOptions = {}) {
         // Render the new files.
         const renderMap = visit(root, getRenderMapVisitor(options));
 
-        renderMap.write(path);
+        //renderMap.write(path);
+        writeRenderMap(renderMap, path);
     });
 }

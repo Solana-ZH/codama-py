@@ -41,3 +41,9 @@ temp/
 # Local
 .local
 test/e2e/local
+
+# Generated code
+pump/
+
+# AI generated files
+QWEN.md

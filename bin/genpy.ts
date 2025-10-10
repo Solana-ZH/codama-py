@@ -1,4 +1,4 @@
-import { renderVisitor } from "../dist/index.node.cjs";
+import { renderVisitor } from "../src/renderVisitor";
 import { visit } from "@codama/visitors-core";
 
 import { createFromRoot, updateProgramsVisitor } from "codama";
@@ -7,16 +7,17 @@ import { readJson } from "@codama/renderers-core";
 import path from "path";
 import { rootNode } from "@codama/nodes";
 import { program } from "commander";
-
+globalThis.__ESM__ = true;
+globalThis.__TEST__ = process.env.NODE_ENV === 'test';
 const options = {};
-function GenIdl(file: String, dirPath: String) {
+function GenIdl(file: string, dirPath: string) {
   //console.log(`file ${file} ${dirPath}`);
-  const idl = readJson(file as string);
+  const idl = readJson(file) as any;
   //return;
   let root;
   try {
     if (idl?.metadata?.spec) {
-      root = rootNodeFromAnchor(idl);
+      root = rootNodeFromAnchor(idl as AnchorIdl);
     } else {
       root = rootNode(idl.program, idl.additionalPrograms);
     }

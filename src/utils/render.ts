@@ -1,5 +1,5 @@
 import { dirname as pathDirname, join } from "node:path";
-//import { fileURLToPath } from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 import {
   camelCase,
@@ -72,10 +72,8 @@ export const render = (
   context?: object,
   options?: NunJucksOptions,
 ): string => {
-  const dirname = __ESM__ ? pathDirname(__filename) : __dirname;
-  const templates = __TEST__
-    ? join(dirname, "..", "..", "public", "templates")
-    : join(dirname, "templates"); // Path to templates from bundled output file.
+  const dirname = __ESM__ ? pathDirname(fileURLToPath(import.meta.url)) : __dirname;
+  const templates = join(dirname, "..", "..", "public", "templates");
   const env = nunjucks.configure(templates, {
     autoescape: false,
     trimBlocks: true,
