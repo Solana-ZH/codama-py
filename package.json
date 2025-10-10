@@ -1,6 +1,6 @@
 {
   "name": "codama-py",
-  "version": "0.1.3-beta",
+  "version": "0.1.4-beta",
   "description": "Python renderer compatible with the Solana Kit library",
   "main": "./dist/index.node.cjs",
   "module": "./dist/index.node.mjs",

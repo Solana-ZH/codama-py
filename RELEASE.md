@@ -1,5 +1,13 @@
 # Release Notes
 
+## v0.1.4-beta (2025-10-10)
+
+### 🐛 Fixes
+
+- Fixed genpy2 script for ES module compatibility and imports
+- Updated API support to Codama 1.3.7
+- Improved TypeScript configuration for better module resolution
+
 ## v0.1.3-beta (2025-08-28)
 
 ### 🔄 Renaming
