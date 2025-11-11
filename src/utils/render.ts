@@ -20,11 +20,50 @@ export function jsDocblock(docs: string[]): string {
   return `/**\n${lines.join("\n")}\n */\n`;
 }
 export function notPyKeyCase(name: string): string {
-  if (name == "global") {
-    return "global_";
-  }
-  if (name == "None") {
-    return "None_";
+  // Python keywords that need to be escaped
+  const pythonKeywords = new Set([
+    "False",
+    "None",
+    "True",
+    "and",
+    "as",
+    "assert",
+    "async",
+    "await",
+    "break",
+    "class",
+    "continue",
+    "def",
+    "del",
+    "elif",
+    "else",
+    "except",
+    "finally",
+    "for",
+    "from",
+    "global",
+    "if",
+    "import",
+    "in",
+    "is",
+    "lambda",
+    "nonlocal",
+    "not",
+    "or",
+    "pass",
+    "raise",
+    "return",
+    "try",
+    "while",
+    "with",
+    "yield",
+    "match",
+    "case",
+    "type",
+  ]);
+
+  if (pythonKeywords.has(name)) {
+    return name + "_";
   }
   return name;
 }
