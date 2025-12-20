@@ -351,10 +351,9 @@ export function getTypeManifestVisitor(input: {
                 visitFixedSizeType(node) {
                     const imports = new ImportMap();
                     if (node.type.kind == 'bytesTypeNode') {
-                        imports.add('..shared', 'FixedSizeBytes');
-                        imports.add('construct', 'GreedyBytes');
+                        imports.add('construct', 'Bytes');
                         return {
-                            borshType: fragment(`FixedSizeBytes(${node.size},GreedyBytes)`, imports), //`borsh.U8[${node.size}]`),
+                            borshType: fragment(`Bytes(${node.size})`, imports), //`borsh.U8[${node.size}]`),
                             fromDecode: fragment('{{name}}'),
                             fromJSON: fragment('bytes({{name}})'),
                             isEncodable: false,
