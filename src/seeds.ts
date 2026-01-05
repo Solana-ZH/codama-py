@@ -28,6 +28,15 @@ export function getSeed(seed: PdaSeedNode): string {
                     return `${seed.name}.to_bytes(${length}, byteorder='little')`;
                 }
             }
+            if (seed.type.kind === 'enumTypeNode') {
+                return `bytes([${seed.name}.discriminator])`;
+            }
+            if (seed.type.kind === 'definedTypeLinkNode') {
+                return `bytes([${seed.name}.discriminator])`;
+            }
+            if (seed.type.kind === 'fixedSizeTypeNode') {
+                return seed.name;
+            }
             return '';
         }
         return '';
@@ -46,6 +55,12 @@ export function getSeedType(seed: PdaSeedNode): string {
             case 'stringTypeNode':
                 return 'str';
             case 'bytesTypeNode':
+                return 'bytes';
+            case 'enumTypeNode':
+                return 'typing.Any';
+            case 'definedTypeLinkNode':
+                return 'typing.Any';
+            case 'fixedSizeTypeNode':
                 return 'bytes';
             default:
                 console.warn(`Unsupported seed type: ${seed.type.kind}`);
