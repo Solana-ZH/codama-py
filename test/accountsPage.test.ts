@@ -1,5 +1,6 @@
 import {
   accountNode,
+  arrayTypeNode,
   booleanTypeNode,
   constantDiscriminatorNode,
   constantValueNodeFromBytes,
@@ -9,6 +10,7 @@ import {
   enumTypeNode,
   enumValueNode,
   fieldDiscriminatorNode,
+  fixedCountNode,
   numberTypeNode,
   numberValueNode,
   programNode,
@@ -178,5 +180,30 @@ test("it renders u32 for account field discriminators", async () => {
   await renderMapContains(renderMap, "accounts/counter.py", [
     '"value" /borsh.U32,',
     "value: int",
+  ]);
+});
+
+test("it decodes fixed-size primitive arrays without conversion", async () => {
+  const node = programNode({
+    accounts: [
+      accountNode({
+        data: structTypeNode([
+          structFieldTypeNode({
+            name: "name",
+            type: arrayTypeNode(numberTypeNode("u8"), fixedCountNode(32)),
+          }),
+        ]),
+        name: "primitiveArray",
+      }),
+    ],
+    name: "myProgram",
+    publicKey: "1111",
+  });
+
+  const renderMap = visit(node, getRenderMapVisitor());
+
+  await renderMapContains(renderMap, "accounts/primitiveArray.py", [
+    `"name" / borsh.U8[32],`,
+    `name=dec.name,`,
   ]);
 });

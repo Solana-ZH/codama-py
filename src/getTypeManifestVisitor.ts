@@ -138,6 +138,7 @@ export function getTypeManifestVisitor(input: {
                                 toEncodeStr = '{{name}}';
                                 toJSONStr = '{{name}}';
                                 fromJSONStr = '{{name}}';
+                                fromDecodeStr = '{{name}}';
                             }
                         }
                         return {

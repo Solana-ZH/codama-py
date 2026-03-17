@@ -1,4 +1,5 @@
 import {
+    definedTypeLinkNode,
     definedTypeNode,
     enumEmptyVariantTypeNode,
     enumStructVariantTypeNode,
@@ -14,7 +15,7 @@ import { visit } from '@codama/visitors-core';
 import { test } from 'vitest';
 
 import { getRenderMapVisitor } from '../src';
-import { codeContains } from './_setup';
+import { codeContains, renderMapContains, renderMapDoesNotContain } from './_setup';
 
 test('it renders a prefix string on a defined type', async () => {
     // Given the following program with 1 defined type using a prefixed size string.
@@ -105,4 +106,31 @@ test('it renders a non-scalar enum without', async () => {
     //codeContains(renderMap.get('types/tag_with_struct.rs'), [`#[derive(`, `pub enum TagWithStruct`]);
     // And we expect the Copy derive to be missing.
     //codeDoesNotContains(renderMap.get('types/tag_with_struct.rs'), `Copy`);
+});
+
+test('it encodes primitive defined type aliases without to_encodable', async () => {
+    const node = programNode({
+        definedTypes: [
+            definedTypeNode({
+                name: 'amount',
+                type: numberTypeNode('u64'),
+            }),
+            definedTypeNode({
+                name: 'holder',
+                type: structTypeNode([
+                    structFieldTypeNode({
+                        name: 'amount',
+                        type: definedTypeLinkNode('amount'),
+                    }),
+                ]),
+            }),
+        ],
+        name: 'splToken',
+        publicKey: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+    });
+
+    const renderMap = visit(node, getRenderMapVisitor());
+
+    await renderMapContains(renderMap, 'types/holder.py', ['"amount": self.amount']);
+    await renderMapDoesNotContain(renderMap, 'types/holder.py', ['"amount": self.amount.to_encodable()']);
 });

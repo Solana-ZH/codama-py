@@ -123,11 +123,11 @@ export function getFieldsToJSONEncodable(
         if (field.name.toLowerCase().includes('discriminator')) {
             return;
         }
-        if (field.type.kind == 'definedTypeLinkNode') {
+        const fieldtype = visit(field.type, typeManifestVisitor);
+        if (field.type.kind == 'definedTypeLinkNode' && fieldtype.isEncodable) {
             const toCastStr = renderString('{{name}}.to_encodable()', { name: 'self.' + field.name });
             fragments.push(`"${field.name}": ${toCastStr}`);
         } else {
-            const fieldtype = visit(field.type, typeManifestVisitor);
             const JSONEncodeableStr = renderString(fieldtype.toEncode.render, {
                 name: `self.${notPyKeyCase(field.name)}`,
             });
