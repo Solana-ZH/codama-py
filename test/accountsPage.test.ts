@@ -7,14 +7,17 @@ import {
   definedTypeLinkNode,
   definedTypeNode,
   enumEmptyVariantTypeNode,
+  enumStructVariantTypeNode,
   enumTypeNode,
   enumValueNode,
   fieldDiscriminatorNode,
   fixedCountNode,
   numberTypeNode,
   numberValueNode,
+  prefixedCountNode,
   programNode,
   publicKeyTypeNode,
+  remainderCountNode,
   structFieldTypeNode,
   structTypeNode,
 } from "@codama/nodes";
@@ -205,5 +208,160 @@ test("it decodes fixed-size primitive arrays without conversion", async () => {
   await renderMapContains(renderMap, "accounts/primitiveArray.py", [
     `"name" / borsh.U8[32],`,
     `name=dec.name,`,
+  ]);
+});
+
+test("it decodes vec of defined structs using from_decoded", async () => {
+  const node = programNode({
+    accounts: [
+      accountNode({
+        data: structTypeNode([
+          structFieldTypeNode({
+            name: "items",
+            type: arrayTypeNode(
+              definedTypeLinkNode("item"),
+              prefixedCountNode(numberTypeNode("u32")),
+            ),
+          }),
+        ]),
+        name: "bag",
+      }),
+    ],
+    definedTypes: [
+      definedTypeNode({
+        name: "kind",
+        type: enumTypeNode([
+          enumEmptyVariantTypeNode("A"),
+          enumStructVariantTypeNode(
+            "B",
+            structTypeNode([
+              structFieldTypeNode({
+                name: "value",
+                type: numberTypeNode("u8"),
+              }),
+            ]),
+          ),
+        ]),
+      }),
+      definedTypeNode({
+        name: "item",
+        type: structTypeNode([
+          structFieldTypeNode({
+            name: "kind",
+            type: definedTypeLinkNode("kind"),
+          }),
+        ]),
+      }),
+    ],
+    name: "myProgram",
+    publicKey: "1111",
+  });
+
+  const renderMap = visit(node, getRenderMapVisitor());
+
+  await renderMapContains(renderMap, "accounts/bag.py", [
+    `items=list(map(lambda item:types.item.Item.from_decoded(item),dec.items)),`,
+  ]);
+  await renderMapContains(renderMap, "accounts/bag.py", [
+    `items=list(map(lambda item:types.item.Item.from_json(item),obj["items"])),`,
+  ]);
+});
+
+test("it decodes vec of defined enums using from_decoded", async () => {
+  const node = programNode({
+    accounts: [
+      accountNode({
+        data: structTypeNode([
+          structFieldTypeNode({
+            name: "items",
+            type: arrayTypeNode(
+              definedTypeLinkNode("kind"),
+              prefixedCountNode(numberTypeNode("u32")),
+            ),
+          }),
+        ]),
+        name: "enumBag",
+      }),
+    ],
+    definedTypes: [
+      definedTypeNode({
+        name: "kind",
+        type: enumTypeNode([
+          enumEmptyVariantTypeNode("A"),
+          enumStructVariantTypeNode(
+            "B",
+            structTypeNode([
+              structFieldTypeNode({
+                name: "value",
+                type: numberTypeNode("u8"),
+              }),
+            ]),
+          ),
+        ]),
+      }),
+    ],
+    name: "myProgram",
+    publicKey: "1111",
+  });
+
+  const renderMap = visit(node, getRenderMapVisitor());
+
+  await renderMapContains(renderMap, "accounts/enumBag.py", [
+    `items=list(map(lambda item:types.kind.from_decoded(item),dec.items)),`,
+  ]);
+  await renderMapContains(renderMap, "accounts/enumBag.py", [
+    `items=list(map(lambda item:types.kind.from_json(item),obj["items"])),`,
+  ]);
+});
+
+test("it decodes remainder primitive arrays without conversion", async () => {
+  const node = programNode({
+    accounts: [
+      accountNode({
+        data: structTypeNode([
+          structFieldTypeNode({
+            name: "items",
+            type: arrayTypeNode(numberTypeNode("u8"), remainderCountNode()),
+          }),
+        ]),
+        name: "remainingBytes",
+      }),
+    ],
+    name: "myProgram",
+    publicKey: "1111",
+  });
+
+  const renderMap = visit(node, getRenderMapVisitor());
+
+  await renderMapContains(renderMap, "accounts/remainingBytes.py", [
+    `"items" / GreedyRange(typing.cast(Construct, borsh.U8)),`,
+    `items=dec.items,`,
+    `items=obj["items"],`,
+  ]);
+});
+
+test("it decodes remainder public key arrays without conversion", async () => {
+  const node = programNode({
+    accounts: [
+      accountNode({
+        data: structTypeNode([
+          structFieldTypeNode({
+            name: "keys",
+            type: arrayTypeNode(publicKeyTypeNode(), remainderCountNode()),
+          }),
+        ]),
+        name: "remainingKeys",
+      }),
+    ],
+    name: "myProgram",
+    publicKey: "1111",
+  });
+
+  const renderMap = visit(node, getRenderMapVisitor());
+
+  await renderMapContains(renderMap, "accounts/remainingKeys.py", [
+    `"keys" / GreedyRange(typing.cast(Construct, BorshPubkey)),`,
+    `keys=dec.keys,`,
+    `keys=list(map(lambda item:SolPubkey.from_string(item),obj["keys"])),`,
   ]);
 });

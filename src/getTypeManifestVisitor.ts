@@ -161,6 +161,18 @@ export function getTypeManifestVisitor(input: {
                             const fromDecodeItemStr = renderString(inner.fromDecode.render, { name: 'item' });
                             fromDecodeStr = `list(map(lambda item:${fromDecodeItemStr},{{name}}))`;
                             toEncodeStr = `list(map(lambda item:item.to_encodable(),{{name}}))`;
+                        } else if (arrayType.item.kind == 'publicKeyTypeNode') {
+                            const fromJSONItemStr = renderString(inner.fromJSON.render, { name: 'item' });
+                            fromJSONStr = `list(map(lambda item:${fromJSONItemStr},{{name}}))`;
+                            const toJSONItemStr = renderString(inner.toJSON.render, { name: 'item' });
+                            toJSONStr = `list(map(lambda item:${toJSONItemStr},{{name}}))`;
+                            fromDecodeStr = '{{name}}';
+                            toEncodeStr = '{{name}}';
+                        } else {
+                            toEncodeStr = '{{name}}';
+                            toJSONStr = '{{name}}';
+                            fromJSONStr = '{{name}}';
+                            fromDecodeStr = '{{name}}';
                         }
                         return {
                             borshType: fragment(
@@ -195,6 +207,10 @@ export function getTypeManifestVisitor(input: {
                                         toJSONStr = `list(map(lambda item:${toJSONItemStr},{{name}}))`;
                                         const fromJSONItemStr = renderString(inner.fromJSON.render, { name: 'item' });
                                         fromJSONStr = `list(map(lambda item:${fromJSONItemStr},{{name}}))`;
+                                        const fromDecodeItemStr = renderString(inner.fromDecode.render, {
+                                            name: 'item',
+                                        });
+                                        fromDecodeStr = `list(map(lambda item:${fromDecodeItemStr},{{name}}))`;
                                         toEncodeStr = `list(map(lambda item:item.to_encodable(),{{name}}))`;
                                     } else {
                                         if (arrayType.item.kind == 'publicKeyTypeNode') {
@@ -204,11 +220,12 @@ export function getTypeManifestVisitor(input: {
                                             fromJSONStr = `list(map(lambda item:${fromJSONItemStr},{{name}}))`;
                                             const toJSONItemStr = renderString(inner.toJSON.render, { name: 'item' });
                                             toJSONStr = `list(map(lambda item:${toJSONItemStr},{{name}}))`;
+                                            fromDecodeStr = '{{name}}';
                                         } else {
-                                            toEncodeStr = '{{name}}';
                                             toEncodeStr = '{{name}}';
                                             toJSONStr = '{{name}}';
                                             fromJSONStr = '{{name}}';
+                                            fromDecodeStr = '{{name}}';
                                         }
                                     }
                                     return {
@@ -216,7 +233,7 @@ export function getTypeManifestVisitor(input: {
                                             `borsh.Vec(typing.cast(Construct, ${itemlayout.borshType.render}))`,
                                             imports,
                                         ),
-                                        fromDecode: fragment(fromJSONStr, imports),
+                                        fromDecode: fragment(fromDecodeStr, imports),
                                         fromJSON: fragment(fromJSONStr, imports),
                                         isEncodable: false,
                                         isEnum: false,
