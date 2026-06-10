@@ -1,9 +1,36 @@
 {% extends "layout.njk" %}
 
 {% block main %}
-{% for pda in pdasToExport | sort(false, false, 'name') %}
-export * from './{{ pda.name | camelCase }}';
-{% else %}
-export default {};
+import typing
+
+from solders.pubkey import Pubkey as SolPubkey
+
+{% for program in programsToExport | sort(false, false, 'name') %}
+{% if program.pdas | length > 0 %}
+from ..program_id import {{ program.name | snakeCase | toUpperCase }}_PROGRAM_ADDRESS
+{% endif %}
+{% endfor %}
+
+{% for program in programsToExport | sort(false, false, 'name') %}
+{% for pda in program.pdas | sort(false, false, 'name') %}
+def find_{{ pda.name | snakeCase }}_pda({% for param in filterByField(pda.seeds, "name") %}{{ param.name }}: {{ getSeedType(param) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> typing.Tuple[SolPubkey, int]:
+    seeds = [
+{% for seed in pda.seeds %}
+        {{ getSeed(seed) }},
+{% endfor %}
+    ]
+
+    address, bump = SolPubkey.find_program_address(seeds,
+    {% if pda.programId != null %}
+        SolPubkey.from_string('{{ pda.programId }}')
+    {% else %}
+        {{ program.name | snakeCase | toUpperCase }}_PROGRAM_ADDRESS
+    {% endif %}
+        )
+
+    return address, bump
+
+
+{% endfor %}
 {% endfor %}
 {% endblock %}
