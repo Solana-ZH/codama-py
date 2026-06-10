@@ -378,6 +378,19 @@ export function getRenderMapVisitor(options: GetRenderMapOptions = {}) {
                           ...scope,
                           accounts: node.accounts,
                           argv: fields,
+                      }).map(account => {
+                          // Replace pdaLinkNode references with the full pdaNode they
+                          // point to, so the rendered find_* helper sees the seeds.
+                          const defaultValue = account.defaultValue;
+                          if (defaultValue?.kind !== 'pdaValueNode' || defaultValue.pda.kind !== 'pdaLinkNode') {
+                              return account;
+                          }
+                          const linkedPda = linkables.get([...instructionPath, defaultValue.pda]);
+                          if (!linkedPda) {
+                              logWarn(`Could not resolve PDA link "${defaultValue.pda.name}". Skipping its seeds.`);
+                              return account;
+                          }
+                          return { ...account, defaultValue: { ...defaultValue, pda: linkedPda } };
                       });
                       return createRenderMap(
                           `instructions/${camelCase(node.name)}.py`,
