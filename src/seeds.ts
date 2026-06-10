@@ -1,4 +1,4 @@
-import { BytesValueNode, PdaSeedNode } from '@codama/nodes';
+import { BytesValueNode, PdaSeedNode, StringValueNode } from '@codama/nodes';
 
 import { hexToPyB } from './getTypeManifestVisitor';
 function parseUNumber(str: string): number {
@@ -9,6 +9,9 @@ function parseUNumber(str: string): number {
     }
     return parsed;
 }
+function pyBytesLiteral(value: string): string {
+    return `b"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
 export function getSeed(seed: PdaSeedNode): string {
     try {
         if (seed.kind === 'constantPdaSeedNode') {
@@ -16,10 +19,17 @@ export function getSeed(seed: PdaSeedNode): string {
                 const hexStr = hexToPyB((seed.value as BytesValueNode).data);
                 return `b"${hexStr}"`;
             }
+            if (seed.type.kind === 'stringTypeNode' && seed.type.encoding === 'utf8' && seed.value.kind === 'stringValueNode') {
+                return pyBytesLiteral((seed.value as StringValueNode).string);
+            }
+            console.warn(`Unsupported constant seed type: ${seed.type.kind}`);
             return '';
         } else if (seed.kind === 'variablePdaSeedNode') {
             if (seed.type.kind === 'publicKeyTypeNode') {
                 return `bytes(${seed.name})`;
+            }
+            if (seed.type.kind === 'stringTypeNode' && seed.type.encoding === 'utf8') {
+                return `${seed.name}.encode("utf-8")`;
             }
             if (seed.type.kind === 'numberTypeNode') {
                 const supportedFormats = ['u8', 'u16', 'u32', 'u64', 'u128'];
