@@ -1,6 +1,6 @@
 {
   "name": "codama-py",
-  "version": "0.1.5-beta",
+  "version": "0.1.6-beta",
   "description": "Python renderer compatible with the Solana Kit library",
   "main": "./dist/index.node.cjs",
   "module": "./dist/index.node.mjs",
@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "build": "rimraf dist && pnpm build:src && pnpm build:types",
-    "build:src": "tsup src/index.ts --format cjs,esm --no-dts --platform node --config tsup.config.node.ts",
+    "build:src": "tsup src/index.ts --no-dts --platform node --config tsup.config.node.ts",
     "build:types": "tsc --build tsconfig.declarations.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
