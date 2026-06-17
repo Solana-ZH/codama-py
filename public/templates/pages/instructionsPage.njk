@@ -21,7 +21,11 @@ layout = borsh.CStruct(
 class {{instructionName | pascalCase}}Accounts(typing.TypedDict):
 {% if accounts.length > 0 %}
 {% for acc in accounts %}
+{% if acc.isOptional %}
+    {{acc.name | notKeywordCase}}: typing.Optional[SolPubkey]
+{% else %}
     {{acc.name | notKeywordCase}}:SolPubkey
+{% endif %}
 {% endfor %}
 {% else %}
     pass
@@ -35,11 +39,15 @@ def {{instructionName | pascalCase}}(
     program_id: SolPubkey =  {{program.name | snakeCase | toUpperCase}}_PROGRAM_ADDRESS,
     remaining_accounts: typing.Optional[typing.List[AccountMeta]] = None,
 ) ->Instruction:
-    keys: list[AccountMeta] = [
+    keys: list[AccountMeta] = []
 {% for acc in accounts %}
-    AccountMeta(pubkey=accounts["{{acc.name | notKeywordCase }}"], is_signer={{ 'True' if acc.isSigner else 'False' }}, is_writable={{ 'True' if acc.isWritable else 'False' }}),
+{% if acc.isOptional %}
+    if accounts.get("{{acc.name | notKeywordCase }}") is not None:
+        keys.append(AccountMeta(pubkey=accounts["{{acc.name | notKeywordCase }}"], is_signer={{ 'True' if acc.isSigner else 'False' }}, is_writable={{ 'True' if acc.isWritable else 'False' }}))
+{% else %}
+    keys.append(AccountMeta(pubkey=accounts["{{acc.name | notKeywordCase }}"], is_signer={{ 'True' if acc.isSigner else 'False' }}, is_writable={{ 'True' if acc.isWritable else 'False' }}))
+{% endif %}
 {% endfor %}
-    ]
     if remaining_accounts is not None:
         keys += remaining_accounts
 {%if discriminators.length>1 %}
