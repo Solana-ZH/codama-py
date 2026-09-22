@@ -221,6 +221,7 @@ export function getTypeManifestVisitor(input: {
                                             const toJSONItemStr = renderString(inner.toJSON.render, { name: 'item' });
                                             toJSONStr = `list(map(lambda item:${toJSONItemStr},{{name}}))`;
                                             fromDecodeStr = '{{name}}';
+                                            toEncodeStr = '{{name}}';
                                         } else {
                                             toEncodeStr = '{{name}}';
                                             toJSONStr = '{{name}}';
@@ -851,7 +852,8 @@ export function getTypeManifestVisitor(input: {
                     const imports = new ImportMap();
                     const items = tupleType.items.map(item => {
                         const itemType = visit(item, self);
-                        imports.mergeWith(itemType.fromDecode);
+                        // The layout needs the item's borsh imports too (e.g. `construct.Bytes`).
+                        imports.mergeWith(itemType.fromDecode, itemType.borshType);
                         return itemType;
                     });
                     const borshTypeStr = items.map((it, index) => `"item_${index}" / ${it.borshType.render}`).join(',');

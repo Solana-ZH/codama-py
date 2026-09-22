@@ -8,6 +8,8 @@
 class {{typeName | pascalCase}}JSON(typing.TypedDict):
 {% for field in fieldsJSON_assignment.renders %}
     {{field}}
+{% else %}
+    pass
 {% endfor %}
 
 @dataclass
