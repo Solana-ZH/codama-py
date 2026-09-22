@@ -1,13 +1,11 @@
 import { BytesValueNode, PdaSeedNode, StringValueNode } from '@codama/nodes';
 
 import { hexToPyB } from './getTypeManifestVisitor';
-function parseUNumber(str: string): number {
-    // Remove 'u' prefix and convert to number
-    const parsed = parseInt(str.replace(/^u/, ''), 10);
-    if (isNaN(parsed) || parsed < 0) {
-        throw new Error(`Invalid unsigned number format: ${str}`);
-    }
-    return parsed;
+function parseIntegerFormat(format: string): { length: number; signed: boolean } | null {
+    // 'u64' -> 8 unsigned bytes, 'i32' -> 4 signed bytes. Floats and shortU16 are not integer seeds.
+    const match = /^([ui])(8|16|32|64|128)$/.exec(format);
+    if (!match) return null;
+    return { length: parseInt(match[2], 10) / 8, signed: match[1] === 'i' };
 }
 function pyBytesLiteral(value: string): string {
     return `b"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
@@ -32,10 +30,10 @@ export function getSeed(seed: PdaSeedNode): string {
                 return `${seed.name}.encode("utf-8")`;
             }
             if (seed.type.kind === 'numberTypeNode') {
-                const supportedFormats = ['u8', 'u16', 'u32', 'u64', 'u128'];
-                if (supportedFormats.includes(seed.type.format)) {
-                    const length = parseUNumber(seed.type.format) / 8;
-                    return `${seed.name}.to_bytes(${length}, byteorder='little')`;
+                const integer = parseIntegerFormat(seed.type.format);
+                if (integer) {
+                    const signed = integer.signed ? ', signed=True' : '';
+                    return `${seed.name}.to_bytes(${integer.length}, byteorder='little'${signed})`;
                 }
             }
             if (seed.type.kind === 'enumTypeNode') {
