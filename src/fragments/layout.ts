@@ -4,6 +4,7 @@ import { visit } from '@codama/visitors-core';
 import type { GlobalFragmentScope } from '../getRenderMapVisitor';
 import { ImportMap } from '../ImportMap';
 import { PyFragment } from './common';
+import { getInlineTupleArg } from './field';
 
 export function getLayoutFields(
     scope: Pick<GlobalFragmentScope, 'typeManifestVisitor'> & {
@@ -16,6 +17,12 @@ export function getLayoutFields(
     const imports = new ImportMap();
     fields.forEach((field, _index) => {
         if (field.name.toLowerCase().includes('discriminator')) {
+            return;
+        }
+        const inlineTuple = getInlineTupleArg(field, typeManifestVisitor);
+        if (inlineTuple) {
+            imports.mergeWith(inlineTuple.imports);
+            fragments.push(`"${field.name}" /${inlineTuple.layout}`);
             return;
         }
         const fieldtype = visit(field.type, typeManifestVisitor);
