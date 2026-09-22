@@ -2,8 +2,6 @@
 
 {% block main %}
 {% for instruction in instructionsToExport | sort(false, false, 'name') %}
-import'./{{ instruction.name | camelCase }}';
-{% else %}
-
+from .{{ instruction.name | camelCase }} import {{ instruction.name | pascalCase }}
 {% endfor %}
 {% endblock %}
