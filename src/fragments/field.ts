@@ -1,5 +1,5 @@
 import { CODAMA_ERROR__RENDERERS__UNSUPPORTED_NODE, CodamaError } from '@codama/errors';
-import { InstructionArgumentNode, StructFieldTypeNode } from '@codama/nodes';
+import { InstructionArgumentNode, isNode, StructFieldTypeNode } from '@codama/nodes';
 import { pascalCase } from '@codama/nodes';
 import { visit } from '@codama/visitors-core';
 
@@ -204,6 +204,37 @@ export function getFieldsFromDecode(
     return new PyFragment(fragments, imports);
 }
 
+/**
+ * Instruction arguments whose type is an inline tuple (e.g. a single-use Rust newtype
+ * such as `struct OptionU64(u64)`, which Codama inlines into the instruction).
+ * The generic tuple manifest is written for enum tuple variants (`self.value[i]`),
+ * so instruction args need their own layout and encoding.
+ */
+export function getInlineTupleArg(
+    field: InstructionArgumentNode | StructFieldTypeNode,
+    typeManifestVisitor: GlobalFragmentScope['typeManifestVisitor'],
+): { encode: (expr: string) => string; imports: ImportMap; layout: string; pyType: string } | null {
+    if (!isNode(field, 'instructionArgumentNode') || !isNode(field.type, 'tupleTypeNode')) {
+        return null;
+    }
+    const imports = new ImportMap();
+    const items = field.type.items.map(item => visit(item, typeManifestVisitor));
+    items.forEach(item => imports.mergeWith(item.borshType, item.pyType));
+    const encodeItem = (item: TypeManifest, expr: string) =>
+        item.isEncodable ? `${expr}.to_encodable()` : renderString(item.toEncode?.render || '{{name}}', { name: expr });
+    const single = items.length === 1;
+    return {
+        // Single-item tuples keep the flat Python type (e.g. `int`) that Codama users already see.
+        encode: expr =>
+            single
+                ? `[${encodeItem(items[0], expr)}]`
+                : `[${items.map((item, i) => encodeItem(item, `${expr}[${i}]`)).join(', ')}]`,
+        imports,
+        layout: `borsh.TupleStruct(${items.map(item => item.borshType.render).join(', ')})`,
+        pyType: single ? items[0].pyType.render : `typing.Tuple[${items.map(item => item.pyType.render).join(', ')}]`,
+    };
+}
+
 export function getArgsToLayout(
     scope: Pick<GlobalFragmentScope, 'typeManifestVisitor'> & {
         fields: InstructionArgumentNode[] | StructFieldTypeNode[];
@@ -214,6 +245,11 @@ export function getArgsToLayout(
     const imports = new ImportMap();
     fields.forEach((field, _index) => {
         if (field.name.toLowerCase().includes('discriminator')) {
+            return;
+        }
+        const inlineTuple = getInlineTupleArg(field, typeManifestVisitor);
+        if (inlineTuple) {
+            fragments.push(`"${field.name}":${inlineTuple.encode('args["' + field.name + '"]')}`);
             return;
         }
         const fieldtype = visit(field.type, typeManifestVisitor);
@@ -236,6 +272,11 @@ export function getArgsToPy(
     },
 ): PyFragment | null {
     const { fragments, imports } = processFields(scope, (field, fieldType, imports) => {
+        const inlineTuple = getInlineTupleArg(field, scope.typeManifestVisitor);
+        if (inlineTuple) {
+            imports.mergeWith(inlineTuple.imports);
+            return `${field.name}:${inlineTuple.pyType}`;
+        }
         imports.mergeWith(fieldType.pyType);
         return `${field.name}:${fieldType.pyType.render}`;
     });
