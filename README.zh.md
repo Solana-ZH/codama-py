@@ -29,6 +29,9 @@ pnpm build
 
 # 从 IDL 文件生成 Python 客户端
 pnpm run genpy -i path/to/your/idl.json -d path/to/output/directory
+
+# 旧版（pre-0.30）Anchor IDL 通常没有 program address，请显式传入：
+pnpm run genpy -i path/to/legacy_idl.json -d path/to/output/directory --program-id <PROGRAM_ADDRESS>
 ```
 
 ## 使用方法
@@ -208,7 +211,13 @@ except RPCException as exc:
 
 ### 程序 ID (Program ID)
 
-程序 ID 是根据 IDL 中提供的程序地址生成的。如果 IDL 中没有提供，则需要手动填写。
+程序 ID 是根据 IDL 中提供的程序地址生成的。如果 IDL 中没有提供（旧版 pre-0.30 Anchor IDL 常见），可通过 CLI 参数传入：
+
+```sh
+pnpm run genpy -i path/to/your/idl.json -d path/to/output/directory --program-id <PROGRAM_ADDRESS>
+```
+
+没有 program address 时会明确报错，而不是生成 `Pubkey.from_string("")`。
 
 ### 描述
 

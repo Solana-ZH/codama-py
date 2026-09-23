@@ -29,6 +29,9 @@ pnpm build
 
 # Generate Python client from an IDL file
 pnpm run genpy -i path/to/your/idl.json -d path/to/output/directory
+
+# Legacy (pre-0.30) Anchor IDLs often omit the program address — pass it explicitly:
+pnpm run genpy -i path/to/legacy_idl.json -d path/to/output/directory --program-id <PROGRAM_ADDRESS>
 ```
 
 ## Usage
@@ -208,7 +211,13 @@ except RPCException as exc:
 
 ### Program ID
 
-The Program ID is generated based on the Program address provided in the IDL. If it is not present in the IDL, it needs to be manually filled in.
+The Program ID is generated based on the Program address provided in the IDL. If the IDL does not include one (common for legacy pre-0.30 Anchor IDLs), pass it with the CLI flag:
+
+```sh
+pnpm run genpy -i path/to/your/idl.json -d path/to/output/directory --program-id <PROGRAM_ADDRESS>
+```
+
+Without a program address, generation fails with a clear error instead of emitting `Pubkey.from_string("")`.
 
 ### Description
 
