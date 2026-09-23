@@ -8,12 +8,12 @@
 class {{error.name | pascalCase}}(ProgramError):
     def __init__(self) -> None:
         super().__init__(
-            {{error.code}}, "{{error.msg}}"
+            {{error.code}}, {{ (error.message or "") | dump }}
         )
 
     code = {{error.code}}
     name = "{{error.name|pascalCase }}"
-    msg = "{{error.msg}}"
+    msg = {{ (error.message or "") | dump }}
 {% endfor %}
 
 CustomError = typing.Union[

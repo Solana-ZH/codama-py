@@ -452,7 +452,7 @@ export function getRenderMapVisitor(options: GetRenderMapOptions = {}) {
 
                           //definedTypesToExport,
                           hasAnythingToExport,
-                          //instructionsToExport,
+                          instructionsToExport,
                           pdasToExport,
                           programsToExport,
                           programsWithErrorsToExport,

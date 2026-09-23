@@ -32,3 +32,21 @@ test('it renders codes for errors', async () => {
         `7000: InvalidProgram(),`,
     ]);
 });
+
+test('it renders error messages as escaped Python strings', async () => {
+    const node = programNode({
+        errors: [
+            errorNode({ code: 6000, message: 'Symbol is "too" long', name: 'InvalidSymbol' }),
+            errorNode({ code: 6001, message: '', name: 'NoMessage' }),
+        ],
+        name: 'tradeJournal',
+        publicKey: '81ZTev5MKDncJawq8iLdpqSUTdy5JvnETa8PvQXfCrtV',
+    });
+
+    const renderMap = visit(node, getRenderMapVisitor());
+    await renderMapContains(renderMap, 'errors/tradeJournal.py', [
+        `msg = "Symbol is \\"too\\" long"`,
+        `6000, "Symbol is \\"too\\" long"`,
+        `msg = ""`,
+    ]);
+});
