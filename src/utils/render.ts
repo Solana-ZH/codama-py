@@ -93,9 +93,16 @@ function configureNunjucksEnvironment(env: nunjucks.Environment): void {
     "filterByField",
     function (array: PdaSeedNode[], fieldName: string): PdaSeedNode[] {
       if (!Array.isArray(array)) return [];
-      return array.filter(
-        (item) => item && typeof item === "object" && fieldName in item,
-      );
+      // Used to build PDA helper parameter lists: a seed may reference the same
+      // account twice, and Python rejects duplicate parameter names.
+      const seen = new Set<unknown>();
+      return array.filter((item) => {
+        if (!item || typeof item !== "object" || !(fieldName in item)) return false;
+        const value = (item as unknown as Record<string, unknown>)[fieldName];
+        if (seen.has(value)) return false;
+        seen.add(value);
+        return true;
+      });
     },
   );
   env.addGlobal("getSeed", function (seed: PdaSeedNode): string {
