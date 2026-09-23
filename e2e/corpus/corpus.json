@@ -1,0 +1,63 @@
+{
+    "drift_v2": {
+        "expect": "generates",
+        "note": "The IDL declares two fields named `padding` in `LPPool`, which cannot be valid Python. Kept as a corpus entry so the failure stays visible.",
+        "programId": "dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH",
+        "source": "https://raw.githubusercontent.com/drift-labs/protocol-v2/master/sdk/src/idl/drift.json",
+        "spec": "legacy"
+    },
+    "jupiter_perps": {
+        "expect": "imports",
+        "programId": "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu",
+        "source": "https://raw.githubusercontent.com/julianfssen/jupiter-perps-anchor-idl-parsing/main/src/idl/jupiter-perpetuals-idl-json.json",
+        "spec": "legacy"
+    },
+    "kamino_lend": {
+        "expect": "imports",
+        "programId": "KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD",
+        "source": "https://raw.githubusercontent.com/Kamino-Finance/klend-sdk/master/src/idl/klend.json",
+        "spec": "legacy"
+    },
+    "marinade": {
+        "expect": "imports",
+        "programId": "MarBmsSgKXdrN1egZf5sqe1TMai9K1rChYNDJgjq7aD",
+        "source": "https://raw.githubusercontent.com/marinade-finance/marinade-ts-sdk/master/src/programs/idl/json/marinade_finance.json",
+        "spec": "legacy"
+    },
+    "meteora_damm_v2": {
+        "expect": "imports",
+        "source": "https://raw.githubusercontent.com/MeteoraAg/damm-v2-sdk/main/src/idl/cp_amm.json",
+        "spec": "0.1.0"
+    },
+    "meteora_dlmm": {
+        "expect": "imports",
+        "source": "https://raw.githubusercontent.com/MeteoraAg/dlmm-sdk/main/idls/dlmm.json",
+        "spec": "0.1.0"
+    },
+    "orca_whirlpool": {
+        "expect": "imports",
+        "note": "Tick array PDAs are seeded with start_tick_index.to_string(), which the IDL cannot express, so the generated find_TickArray does not match mainnet.",
+        "source": "anchor idl fetch whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+        "spec": "0.1.0"
+    },
+    "pump_amm": {
+        "expect": "imports",
+        "source": "https://raw.githubusercontent.com/pump-fun/pump-public-docs/main/idl/pump_amm.json",
+        "spec": "0.1.0"
+    },
+    "pump_fun": {
+        "expect": "imports",
+        "source": "https://raw.githubusercontent.com/pump-fun/pump-public-docs/main/idl/pump.json",
+        "spec": "0.1.0"
+    },
+    "raydium_cpmm": {
+        "expect": "imports",
+        "source": "https://raw.githubusercontent.com/raydium-io/raydium-idl/master/raydium_cpmm/raydium_cp_swap.json",
+        "spec": "0.1.0"
+    },
+    "raydium_launchpad": {
+        "expect": "imports",
+        "source": "https://raw.githubusercontent.com/raydium-io/raydium-idl/master/raydium_launchpad/raydium_launchpad.json",
+        "spec": "0.1.0"
+    }
+}

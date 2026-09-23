@@ -47,3 +47,6 @@ pump/
 
 # AI generated files
 QWEN.md
+
+# e2e corpus output
+e2e/corpus/out/
