@@ -1,0 +1,4 @@
+solana>=0.36.6
+solders>=0.26.0
+anchorpy>=0.21.0
+borsh-construct>=0.1.0
